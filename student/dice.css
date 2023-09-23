@@ -1,0 +1,26 @@
+#btn_grid {
+  height: 95vh;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  grid-template-columns: 33% 33% 33%;
+}
+
+body,button {
+  background-color: black;
+  color: white;
+  font-family: monospace;
+}
+
+
+button {
+  display: block;
+  margin: 10px;
+  border: 10px solid white;
+  border-radius: 32px;
+  font-size: 25vh;
+	box-shadow: 7px 7px 1px 1px grey;
+}
+button:active { /* really cool effect imo */
+	box-shadow: none;
+	transform: translate(7px,7px);
+}
