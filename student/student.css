@@ -14,13 +14,13 @@ body,button {
 
 button {
   display: block;
-  margin: 10px;
-  border: 10px solid white;
-  border-radius: 32px;
+  margin: 16px;
+  border: 8px solid white;
+  /*border-radius: 32px;*/
   font-size: 25vh;
-	box-shadow: 7px 7px 1px 1px grey;
+  box-shadow: 8px 8px 0px 0px purple;
 }
-button:active { /* really cool effect imo */
+button:active {
 	box-shadow: none;
 	transform: translate(7px,7px);
 }
