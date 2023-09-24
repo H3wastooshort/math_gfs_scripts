@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, threading
 from aiohttp import web
 from matplotlib import pyplot as plt
 import numpy, matplotlib
@@ -52,14 +52,13 @@ def do_plot():
     fig.canvas.draw()
     fig.canvas.flush_events()
 
-async def plot_loop():
+def plot_loop():
     global plt
     while True:
         if new_data:
             do_plot()
         plt.gcf().canvas.draw_idle()
         plt.gcf().canvas.start_event_loop(0.1)
-        await asyncio.sleep(0.1)
 
 def do_outcome_sum():
     global new_data
@@ -92,20 +91,15 @@ async def add_outcome(req):
     do_outcome_sum()
     return web.Response(text="ok")
 
-#setup loop
-loop = asyncio.get_event_loop()
-loop.create_task(plot_loop())
+def web_loop():
+    app = web.Application()
+    app.add_routes([
+        web.static('/', "student"),
+        web.post('/outcome', add_outcome)
+    ])
+    web.run_app(app)
 
-#start webserver
-app = web.Application(loop=loop)
-app.add_routes([
-    web.static('/', "student"),
-    web.post('/outcome', add_outcome)
-])
-server = loop.create_server(app.make_handler(), '0.0.0.0', 8000)
-print("Server started")
-loop.run_until_complete(server)
-try:
-    loop.run_forever()
-except KeyboardInterrupt:
-    pass
+web_thread = threading.Thread(target=web_loop)
+web_thread.start()
+
+plot_loop()
