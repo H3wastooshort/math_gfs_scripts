@@ -1,22 +1,17 @@
 body {
-  overflow:none;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 #btn_grid {
-  position: fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  overflow:none;
-  height: 90vh;
+  min-height: 90vh;
+  max-height: 95vh;
   width: 100%;
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: auto auto auto;
+  grid-gap: 24px;
 }
 
 body,button {
@@ -27,7 +22,9 @@ body,button {
 
 button {
   display: block;
-  margin: 16px;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
   border: 8px solid white;
   /*border-radius: 32px;*/
   font-size: 25vh;
