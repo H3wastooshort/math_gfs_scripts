@@ -2,13 +2,10 @@ possible_outcomes = [1,2,3,4,5,6]
 
 // generate buttons
 possible_outcomes.forEach(o => {
-	let div = document.createElement('div');
-	div.className="btn_cell";
 	let btn = document.createElement('button');
 	btn.innerText = o;
 	btn.onclick=send_outcome;
-	div.appendChild(btn);
-	btn_grid.appendChild(div);
+	btn_grid.appendChild(btn);
 });
 
 function send_outcome(evt) {
