@@ -1,0 +1,1 @@
+while (1) {curl.exe -X POST http://localhost:8080/outcome -d $(Get-Random -Minimum 1 -Maximum 7)}
