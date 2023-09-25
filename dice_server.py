@@ -1,16 +1,17 @@
-import asyncio, threading
+import asyncio, threading, math
 from aiohttp import web
 from matplotlib import pyplot as plt
-import numpy, matplotlib
 
 outcomes_per_sum = 5
 
 possible_outcomes = range(1,7,1)
 outcomes = {}
+all_outcomes={}
 def reset_outcomes(oc,po):
     for x in po:
         oc[x] = 0
 reset_outcomes(outcomes,possible_outcomes)
+reset_outcomes(all_outcomes,possible_outcomes)
 
 def get_max(l):
     max_x = l[0]
@@ -36,17 +37,60 @@ reset_outcomes(sum_outcomes,possible_sum_outcomes)
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()
-stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid')
+plt.xticks(fontsize='x-large')
+plt.yticks(fontsize='x-large')
+ax.set_xticks(possible_sum_outcomes)
+ax.set_ylim(get_min(possible_sum_outcomes)-1,get_max(possible_sum_outcomes)+1);
+#ax.set_ylabel("")
+#ax.set_xlabel("")
+stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid',color='blue')
+stddevline1, = ax.plot([0,0],[0,0],color='red', visible=False)
+stddevline2, = ax.plot([0,0],[0,0],color='red', visible=False)
+meanline, = ax.plot([0,0],[0,0],color='lime', visible=False)
+txt = ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
-new_data = True
+new_data = False
+
+def calc_mean_and_stddev(oc):
+    n_oc = 0
+    for v in oc.values():
+        n_oc += v
+    if n_oc < 1:
+        return (-0, -0)
+    p_oc = {}
+    mean = 0
+    for k in oc.keys():
+        p = (oc[k] / n_oc)
+        p_oc[k] = p
+        mean += p * k
+    variance = 0
+    for k in oc.keys():
+        variance += p_oc[k] * pow(k - mean, 2)
+    stddev = math.sqrt(variance)
+    return (mean, stddev)
 
 def do_plot():
     global new_data
     new_data=False
     
-    global stepplot, fig, ax
+    global fig, ax, stepplot, txt, mean, meanline
+    mean, stddev = calc_mean_and_stddev(sum_outcomes)
+    #update annotation
+    mean_0 = mean/outcomes_per_sum
+    stddev_0 = 0 #stddev*math.sqrt(outcomes_per_sum)
+    txt.set_text("µ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
+    #update plot
     sum_ocv = list(sum_outcomes.values())
     max_y = get_max(sum_ocv)+1
+    meanline.set_xdata([mean,mean])
+    meanline.set_ydata([0,max_y])
+    meanline.set_visible(True)
+    stddevline1.set_xdata([mean+stddev,mean+stddev])
+    stddevline1.set_ydata([0,max_y])
+    stddevline1.set_visible(True)
+    stddevline2.set_xdata([mean-stddev,mean-stddev])
+    stddevline2.set_ydata([0,max_y])
+    stddevline2.set_visible(True)
     ax.set_ylim(0,max_y);
     stepplot.set_ydata(sum_ocv)
     fig.canvas.draw()
@@ -54,11 +98,14 @@ def do_plot():
 
 def plot_loop():
     global plt
-    while True:
-        if new_data:
-            do_plot()
-        plt.gcf().canvas.draw_idle()
-        plt.gcf().canvas.start_event_loop(0.1)
+    try:
+        while True:
+            if new_data:
+                do_plot()
+            plt.gcf().canvas.draw_idle()
+            plt.gcf().canvas.start_event_loop(0.1)
+    except KeyboardInterrupt:
+        quit()
 
 def do_outcome_sum():
     global new_data
@@ -73,7 +120,7 @@ def do_outcome_sum():
             outcomes[k]=0
         print(o_sum)
         sum_outcomes[o_sum] += 1
-    new_data=True
+        new_data=True
         
 
 async def add_outcome(req):
@@ -87,6 +134,7 @@ async def add_outcome(req):
     if n not in possible_outcomes:
         return web.Response(status=400,text="unknown outcome")
     outcomes[n] += 1
+    all_outcomes[n] += 1
     print(outcomes)
     do_outcome_sum()
     return web.Response(text="ok")
