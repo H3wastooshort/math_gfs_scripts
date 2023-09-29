@@ -43,6 +43,8 @@ ax.set_xticks(possible_sum_outcomes)
 ax.set_ylim(get_min(possible_sum_outcomes)-1,get_max(possible_sum_outcomes)+1);
 #ax.set_ylabel("")
 #ax.set_xlabel("")
+bellcurve_xvals = possible_sum_outcomes
+bellcurve, = ax.plot(bellcurve_xvals,bellcurve_xvals,color='grey', visible=False)
 stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid',color='blue')
 stddevline1, = ax.plot([0,0],[0,0],color='red', visible=False)
 stddevline2, = ax.plot([0,0],[0,0],color='red', visible=False)
@@ -56,7 +58,7 @@ def calc_mean_and_stddev(oc):
     for v in oc.values():
         n_oc += v
     if n_oc < 1:
-        return (-0, -0)
+        return (0, 1)
     p_oc = {}
     mean = 0
     for k in oc.keys():
@@ -69,19 +71,28 @@ def calc_mean_and_stddev(oc):
     stddev = math.sqrt(variance)
     return (mean, stddev)
 
+sqrt_2pi = math.sqrt(2*math.pi)
+def normal_dist(x, mean,stddev):
+    if stddev == 0:
+        return 0
+    return (1/(stddev*sqrt_2pi))  *  pow(math.e, -pow((x-mean)/stddev, 2) / 2)
 def do_plot():
     global new_data
     new_data=False
     
-    global fig, ax, stepplot, txt, mean, meanline
+    global fig, ax, stepplot, txt, mean, meanline, bellcurve
     mean, stddev = calc_mean_and_stddev(sum_outcomes)
     #update annotation
     mean_0 = mean/outcomes_per_sum
     stddev_0 = 0 #stddev*math.sqrt(outcomes_per_sum)
     txt.set_text("µ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
+    
     #update plot
     sum_ocv = list(sum_outcomes.values())
     max_y = get_max(sum_ocv)+1
+    ax.set_ylim(0,max_y);
+    stepplot.set_ydata(sum_ocv)
+    
     meanline.set_xdata([mean,mean])
     meanline.set_ydata([0,max_y])
     meanline.set_visible(True)
@@ -91,8 +102,13 @@ def do_plot():
     stddevline2.set_xdata([mean-stddev,mean-stddev])
     stddevline2.set_ydata([0,max_y])
     stddevline2.set_visible(True)
-    ax.set_ylim(0,max_y);
-    stepplot.set_ydata(sum_ocv)
+    
+    bc_y = []
+    for x in bellcurve_xvals:
+        bc_y.append(normal_dist(x, mean,stddev))
+    bellcurve.set_ydata(bc_y)
+    bellcurve.set_visible(True)
+    
     fig.canvas.draw()
     fig.canvas.flush_events()
 
