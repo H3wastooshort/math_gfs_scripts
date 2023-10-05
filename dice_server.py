@@ -1,5 +1,4 @@
 import asyncio, threading, math
-from aiohttp import web
 from matplotlib import pyplot as plt
 
 outcomes_per_sum = 5
@@ -34,8 +33,6 @@ def reset_outcomes(oc,po):
 reset_outcomes(sum_outcomes,possible_sum_outcomes)
 
 #set up plot
-plt.ion()
-plt.show()
 fig,ax = plt.subplots()
 plt.xticks(fontsize='x-large')
 plt.yticks(fontsize='x-large')
@@ -112,17 +109,6 @@ def do_plot():
     fig.canvas.draw()
     fig.canvas.flush_events()
 
-def plot_loop():
-    global plt
-    try:
-        while True:
-            if new_data:
-                do_plot()
-            plt.gcf().canvas.draw_idle()
-            plt.gcf().canvas.start_event_loop(0.1)
-    except KeyboardInterrupt:
-        quit()
-
 def do_outcome_sum():
     global new_data
     n=0
@@ -155,15 +141,5 @@ async def add_outcome(req):
     do_outcome_sum()
     return web.Response(text="ok")
 
-def web_loop():
-    app = web.Application()
-    app.add_routes([
-        web.static('/', "student"),
-        web.post('/outcome', add_outcome)
-    ])
-    web.run_app(app)
 
-web_thread = threading.Thread(target=web_loop)
-web_thread.start()
-
-plot_loop()
+plt.show()
