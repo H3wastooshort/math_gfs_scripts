@@ -125,21 +125,19 @@ def do_outcome_sum():
         new_data=True
         
 
-async def add_outcome(req):
+async def add_outcome(dat):
     global new_data
-    dat = await req.text()
     n=0
     try:
         n=int(dat)
     except:
-        return web.Response(status=400,text="invalid outcome")
+        print(dat,"invalid outcome")
     if n not in possible_outcomes:
-        return web.Response(status=400,text="unknown outcome")
+        print(n,"unknown outcome")
     outcomes[n] += 1
     all_outcomes[n] += 1
     print(outcomes)
     do_outcome_sum()
-    return web.Response(text="ok")
 
 
 plt.show()
