@@ -1,11 +1,10 @@
-import asyncio, threading, math
+import math, sys
 from matplotlib import pyplot as plt
 
 outcomes_per_sum = 5
 
 possible_outcomes = range(1,7,1)
 outcomes = {}
-all_outcomes={}
 def reset_outcomes(oc,po):
     for x in po:
         oc[x] = 0
@@ -31,6 +30,37 @@ def reset_outcomes(oc,po):
     for x in po:
         oc[x] = 0
 reset_outcomes(sum_outcomes,possible_sum_outcomes)
+
+
+def do_outcome_sum():
+    global new_data
+    n=0
+    for v in outcomes.values():
+        n+=v
+    if n >= outcomes_per_sum:
+        #calc new sum and add to dist
+        o_sum = 0
+        for k in outcomes.keys():
+            o_sum += k*outcomes[k]
+            outcomes[k]=0
+        print(o_sum)
+        sum_outcomes[o_sum] += 1
+        new_data=True
+        
+
+def add_outcome(dat):
+    global new_data
+    n=0
+    try:
+        n=int(dat)
+    except:
+        print(dat,"invalid outcome")
+    if n not in possible_outcomes:
+        print(n,"unknown outcome")
+    outcomes[n] += 1
+    print(outcomes)
+    do_outcome_sum()
+
 
 #set up plot
 fig,ax = plt.subplots()
@@ -108,36 +138,5 @@ def do_plot():
     
     fig.canvas.draw()
     fig.canvas.flush_events()
-
-def do_outcome_sum():
-    global new_data
-    n=0
-    for v in outcomes.values():
-        n+=v
-    if n >= outcomes_per_sum:
-        #calc new sum and add to dist
-        o_sum = 0
-        for k in outcomes.keys():
-            o_sum += k*outcomes[k]
-            outcomes[k]=0
-        print(o_sum)
-        sum_outcomes[o_sum] += 1
-        new_data=True
-        
-
-async def add_outcome(dat):
-    global new_data
-    n=0
-    try:
-        n=int(dat)
-    except:
-        print(dat,"invalid outcome")
-    if n not in possible_outcomes:
-        print(n,"unknown outcome")
-    outcomes[n] += 1
-    all_outcomes[n] += 1
-    print(outcomes)
-    do_outcome_sum()
-
 
 plt.show()
