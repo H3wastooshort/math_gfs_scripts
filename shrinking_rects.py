@@ -25,10 +25,11 @@ ready_to_plot = threading.Event()
 plotting_in_progress = threading.Event()
 def wait_for_plot():
     ready_to_plot.clear()
-    ready_to_plot.wait()
     plotting_in_progress.set()
+    ready_to_plot.wait()
 def plot_done():
     plt.gcf().canvas.draw_idle()
+    plt.gcf().canvas.flush_events()
     plotting_in_progress.clear()
 def draw_bars(n):
     wait_for_plot()
