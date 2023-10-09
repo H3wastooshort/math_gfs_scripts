@@ -6,12 +6,10 @@ outcomes_per_sum = 5
 
 possible_outcomes = range(1,7,1)
 outcomes = {}
-all_outcomes={}
 def reset_outcomes(oc,po):
     for x in po:
         oc[x] = 0
 reset_outcomes(outcomes,possible_outcomes)
-reset_outcomes(all_outcomes,possible_outcomes)
 
 def get_max(l):
     max_x = l[0]
@@ -28,9 +26,6 @@ def get_min(l):
 
 possible_sum_outcomes = range(get_min(possible_outcomes)*outcomes_per_sum,(get_max(possible_outcomes)*outcomes_per_sum)+1,1)
 sum_outcomes = {}
-def reset_outcomes(oc,po):
-    for x in po:
-        oc[x] = 0
 reset_outcomes(sum_outcomes,possible_sum_outcomes)
 
 #set up plot
@@ -150,7 +145,6 @@ async def add_outcome(req):
     if n not in possible_outcomes:
         return web.Response(status=400,text="unknown outcome")
     outcomes[n] += 1
-    all_outcomes[n] += 1
     print(outcomes)
     do_outcome_sum()
     return web.Response(text="ok")
