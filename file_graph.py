@@ -1,15 +1,8 @@
 import math, sys
 from matplotlib import pyplot as plt
 
-outcomes_per_sum = 5
-
-possible_outcomes = range(1,7,1)
 outcomes = {}
-def reset_outcomes(oc,po):
-    for x in po:
-        oc[x] = 0
-reset_outcomes(outcomes,possible_outcomes)
-reset_outcomes(all_outcomes,possible_outcomes)
+sum_outcomes = {}
 
 def get_max(l):
     max_x = l[0]
@@ -23,14 +16,6 @@ def get_min(l):
         if x < min_x:
             min_x = x
     return min_x
-
-possible_sum_outcomes = range(get_min(possible_outcomes)*outcomes_per_sum,(get_max(possible_outcomes)*outcomes_per_sum)+1,1)
-sum_outcomes = {}
-def reset_outcomes(oc,po):
-    for x in po:
-        oc[x] = 0
-reset_outcomes(sum_outcomes,possible_sum_outcomes)
-
 
 def do_outcome_sum():
     global new_data
