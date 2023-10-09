@@ -22,15 +22,19 @@ def normal_dist_area(start,stop):
 
 
 ready_to_plot = threading.Event()
-plotting_in_progress = threading.Event()
+plotting_done = threading.Event()
 def wait_for_plot():
     ready_to_plot.clear()
-    plotting_in_progress.set()
+    plotting_done.clear()
+    print("waiting to start plotting")
     ready_to_plot.wait()
+    print("starting to plot")
 def plot_done():
     plt.gcf().canvas.draw_idle()
     plt.gcf().canvas.flush_events()
-    plotting_in_progress.clear()
+    plotting_done.set()
+    ready_to_plot.clear()
+    print("plot completed")
 def draw_bars(n):
     wait_for_plot()
     ax.annotate("Calculating...", xy=(0.05,0.95), xycoords='axes fraction',va='top', ha='left', fontsize='xx-large')
@@ -49,7 +53,7 @@ def draw_bars(n):
     ax.bar(x=list(bars.keys()),height=bars.values(),width=bar_width, align='edge',edgecolor='blue',color='lightblue')
     ax.annotate(text, xy=(bar_width,bars[0]),textcoords='axes fraction',va='top', ha='right',xytext=(0.95,0.95), fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     ax.set_xlim(0,graph_width)
-    plotting_in_progress.clear()
+    plot_done()
 
 def input_loop():
     while True:
@@ -64,4 +68,4 @@ input_thread.start()
 while True:
     plt.gcf().canvas.start_event_loop(0.1)
     ready_to_plot.set()
-    plotting_in_progress.wait()
+    plotting_done.wait()
