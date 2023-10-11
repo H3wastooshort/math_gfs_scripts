@@ -21,26 +21,14 @@ def normal_dist_area(start,stop):
     return res
 
 
-ready_to_plot = threading.Event()
-plotting_done = threading.Event()
-def wait_for_plot():
-    ready_to_plot.clear()
-    plotting_done.clear()
-    print("waiting to start plotting")
-    ready_to_plot.wait()
-    print("starting to plot")
 def plot_done():
     plt.gcf().canvas.draw_idle()
     plt.gcf().canvas.flush_events()
-    plotting_done.set()
-    ready_to_plot.clear()
     print("plot completed")
-def draw_bars(n):
-    wait_for_plot()
+def draw_bars(n): #something causes errors here, idk what \(°-°)/
     ax.annotate("Calculating...", xy=(0.05,0.95), xycoords='axes fraction',va='top', ha='left', fontsize='xx-large')
     plot_done()
     
-    wait_for_plot()
     ##calc
     bars={}
     bar_width = graph_width/n
@@ -60,12 +48,12 @@ def input_loop():
         inp=input("Enter n of bars: ")
         if inp == 'q':
             quit()
-        draw_bars(int(inp))
+        if inp.isdigit():
+            int(inp)
+        else:
+            print("numbers only pls")
 
 input_thread = threading.Thread(target=input_loop)
 input_thread.start()
 
-while True:
-    plt.gcf().canvas.start_event_loop(0.1)
-    ready_to_plot.set()
-    plotting_done.wait()
+plt.gcf().canvas.start_event_loop()
