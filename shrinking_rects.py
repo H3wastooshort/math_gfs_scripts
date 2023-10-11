@@ -14,16 +14,10 @@ plt.yticks(fontsize='x-large')
 #ax.set_ylabel("")
 #ax.set_xlabel("")
 
-def normal_dist(x):
-    return scipy.stats.norm.pdf(x,0,graph_sigma)
-def normal_dist_area(start,stop):
-    d = 100
-    diff = stop-start
-    res=0
-    for i in range (0,d):
-        res += normal_dist(start + (stop*(i/d)))
-    return res/d
-
+def normal_dist_area(a,b):
+    B_a = scipy.stats.norm.cdf(a,loc=0,scale=graph_sigma)
+    B_b = scipy.stats.norm.cdf(b,loc=0,scale=graph_sigma)
+    return B_b - B_a
 
 def plot_done():
     plt.gcf().canvas.draw_idle()
