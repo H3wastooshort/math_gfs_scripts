@@ -1,8 +1,12 @@
 import math, sys
 from matplotlib import pyplot as plt
 
+stepwidth = 5
+
+
 outcomes = {}
 sum_outcomes = {}
+even_summier_sum_outcomes={}
 
 def get_max(l):
     max_x = l[0]
@@ -28,8 +32,7 @@ def do_outcome_sum():
         for k in outcomes.keys():
             o_sum += k*outcomes[k]
             outcomes[k]=0
-        print(o_sum)
-        sum_outcomes[o_sum] += 1
+        sum_outcomes.append(o_sum)
         new_data=True
         
 
@@ -43,7 +46,6 @@ def add_outcome(dat):
     if n not in possible_outcomes:
         print(n,"unknown outcome")
     outcomes[n] += 1
-    print(outcomes)
     do_outcome_sum()
 
 
@@ -57,13 +59,27 @@ ax.set_ylim(get_min(possible_sum_outcomes)-1,get_max(possible_sum_outcomes)+1);
 #ax.set_xlabel("")
 bellcurve_xvals = possible_sum_outcomes
 bellcurve, = ax.plot(bellcurve_xvals,bellcurve_xvals,color='grey', visible=False)
-stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid',color='blue')
+stepplot, = ax.step(even_summier_sum_outcomes.keys(), even_summier_sum_outcomes.values(), where='mid',color='blue')
 stddevline1, = ax.plot([0,0],[0,0],color='red', visible=False)
 stddevline2, = ax.plot([0,0],[0,0],color='red', visible=False)
 meanline, = ax.plot([0,0],[0,0],color='lime', visible=False)
 txt = ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
 new_data = False
+
+def get_between(array,a,b):
+    res=[]
+    for x in array:
+        if a<=x<b:
+            res.append(x)
+    return x
+
+def sum_per_x(oc):
+    k=list(oc.keys())
+    mi=get_min(k)
+    mx=get_max(k)
+    for i in range(mi,mx,stepwidth):
+        even_summier_sum_outcomes.append(get_between(k,i,i+stepwidth))
 
 def calc_mean_and_stddev(oc):
     n_oc = 0
@@ -100,10 +116,10 @@ def do_plot():
     txt.set_text("µ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
     
     #update plot
-    sum_ocv = list(sum_outcomes.values())
-    max_y = get_max(sum_ocv)+1
+    max_y = get_max(even_summier_sum_outcomes)+1
     ax.set_ylim(0,max_y);
-    stepplot.set_ydata(sum_ocv)
+    stepplot.set_xdata(list(even_summier_sum_outcomes.keys()))
+    stepplot.set_ydata(list(even_summier_sum_outcomes.values()))
     
     meanline.set_xdata([mean,mean])
     meanline.set_ydata([0,max_y])
