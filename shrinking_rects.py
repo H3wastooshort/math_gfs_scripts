@@ -3,7 +3,7 @@ from time import sleep
 from matplotlib import pyplot as plt
 
 graph_sigma=0.5
-graph_width=graph_sigma*2
+graph_width=graph_sigma*3
 
 #set up plot
 plt.ion()
@@ -35,7 +35,7 @@ def draw_bars(n): #something causes errors here, idk what \(°-°)/
     bar_width = graph_width/n
     for i in range(0,n):
         x = i * bar_width
-        bars[x] = normal_dist_area(x,x+bar_width) ** (n/graph_width) #(1/bar_width)
+        bars[x] = normal_dist_area(x,x+bar_width)
     text="P="+str(normal_dist_area(0,bar_width))
     ##draw (badly)
     ax.clear()
