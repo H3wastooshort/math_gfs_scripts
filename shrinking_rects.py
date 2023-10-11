@@ -2,8 +2,8 @@ import asyncio, threading, math, scipy
 from time import sleep
 from matplotlib import pyplot as plt
 
-graph_sigma=3
-graph_width=graph_sigma*3
+graph_sigma=0.5
+graph_width=graph_sigma*2
 
 #set up plot
 plt.ion()
@@ -17,8 +17,12 @@ plt.yticks(fontsize='x-large')
 def normal_dist(x):
     return scipy.stats.norm.pdf(x,0,graph_sigma)
 def normal_dist_area(start,stop):
-    res, err = scipy.integrate.quad(normal_dist, start, stop)
-    return res
+    d = 100
+    diff = stop-start
+    res=0
+    for i in range (0,d):
+        res += normal_dist(start + (stop*(i/d)))
+    return res/d
 
 
 def plot_done():
@@ -26,15 +30,12 @@ def plot_done():
     plt.gcf().canvas.flush_events()
     print("plot completed")
 def draw_bars(n): #something causes errors here, idk what \(°-°)/
-    ax.annotate("Calculating...", xy=(0.05,0.95), xycoords='axes fraction',va='top', ha='left', fontsize='xx-large')
-    plot_done()
-    
     ##calc
     bars={}
     bar_width = graph_width/n
     for i in range(0,n):
         x = i * bar_width
-        bars[x]= normal_dist_area(x,x+bar_width) ** n#(1/bar_width)
+        bars[x] = normal_dist_area(x,x+bar_width) ** (n/graph_width) #(1/bar_width)
     text="P="+str(normal_dist_area(0,bar_width))
     ##draw (badly)
     ax.clear()
@@ -49,7 +50,7 @@ def input_loop():
         if inp == 'q':
             quit()
         if inp.isdigit():
-            int(inp)
+            draw_bars(int(inp))
         else:
             print("numbers only pls")
 
