@@ -3,11 +3,13 @@ from time import sleep
 from matplotlib import pyplot as plt
 
 #set up plot
+plt.rc('axes', labelsize='x-large', titlesize='xx-large')
+plt.rc('xtick', labelsize='x-large')
+plt.rc('ytick', labelsize='x-large')
+plt.rc('legend', fontsize='xx-large')
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()
-plt.xticks(fontsize='x-large')
-plt.yticks(fontsize='x-large')
 
 def plot_done():
     plt.gcf().canvas.draw_idle()
