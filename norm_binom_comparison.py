@@ -35,8 +35,8 @@ def draw_bars(n,pp):
     ax.set_ylabel("P")
     ax.set_xlabel("k")
     #ax.set_xticks(range(n+1))
-    ax.bar(x=list(bars_binom.keys()),height=bars_binom.values(),width=1, align='center',edgecolor='red',color='mistyrose', alpha= 0.75)
-    ax.bar(x=list(bars_norm.keys()),height=bars_norm.values(),width=1, align='center',edgecolor='blue',color='lightblue', alpha= 0.75)
+    ax.bar(x=list(bars_binom.keys()),height=bars_binom.values(),width=1, align='center',edgecolor='red',color='mistyrose', alpha= 0.5)
+    ax.bar(x=list(bars_norm.keys()),height=bars_norm.values(),width=1, align='center',edgecolor='blue',color='lightblue', alpha= 0.5)
     ax.annotate(text, xy=(0.95,0.95), xycoords='axes fraction',va='top', ha='right', fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     plot_done()
 
