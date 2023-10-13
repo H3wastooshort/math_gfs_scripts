@@ -2,49 +2,40 @@ import asyncio, threading, math, scipy
 from time import sleep
 from matplotlib import pyplot as plt
 
-graph_sigma=0.5
-graph_width=graph_sigma*3
-
 #set up plot
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()
 plt.xticks(fontsize='x-large')
 plt.yticks(fontsize='x-large')
-#ax.set_ylabel("")
-#ax.set_xlabel("")
-
-def normal_dist_area(a,b):
-    B_a = scipy.stats.norm.cdf(a,loc=0,scale=graph_sigma)
-    B_b = scipy.stats.norm.cdf(b,loc=0,scale=graph_sigma)
-    return B_b - B_a
 
 def plot_done():
     plt.gcf().canvas.draw_idle()
     plt.gcf().canvas.flush_events()
     print("plot completed")
-def draw_bars(n): #something causes errors here, idk what \(°-°)/
+def draw_bars(n,pp):
     ##calc
+    p=pp/100
     bars={}
-    bar_width = graph_width/n
-    for i in range(0,n):
-        x = i * bar_width
-        bars[x] = normal_dist_area(x,x+bar_width)
-    text="P="+str(normal_dist_area(0,bar_width))
+    for k in range(n+1):
+        bars[k] = scipy.stats.binom.pmf(k,n,p)
     ##draw (badly)
+    text="n=%d\np=%d"%(n,p)
     ax.clear()
-    ax.bar(x=list(bars.keys()),height=bars.values(),width=bar_width, align='edge',edgecolor='blue',color='lightblue')
-    ax.annotate(text, xy=(bar_width,bars[0]),textcoords='axes fraction',va='top', ha='right',xytext=(0.95,0.95), fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
-    ax.set_xlim(0,graph_width)
+    ax.set_ylabel("P")
+    ax.set_xlabel("x_i")
+    ax.bar(x=list(bars.keys()),height=bars.values(),width=1, align='center',edgecolor='blue',color='lightblue')
+    ax.annotate(text, xy=(0.95,0.95), xycoords='axes fraction',va='top', ha='right', fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     plot_done()
 
 def input_loop():
     while True:
-        inp=input("Enter n of bars: ")
-        if inp == 'q':
+        n=input("Enter n: ")
+        pp=input("Enter p%: ")
+        if 'q' in [n,pp]:
             quit()
-        if inp.isdigit():
-            draw_bars(int(inp))
+        if n.isdigit() and pp.isdigit():
+            draw_bars(int(n),int(pp))
         else:
             print("numbers only pls")
 
