@@ -22,10 +22,11 @@ def draw_bars(n,pp):
     for k in range(n+1):
         bars[k] = scipy.stats.binom.pmf(k,n,p)
     ##draw (badly)
-    text="n=%d\np=%d"%(n,p)
+    text="n=%d\np=%0.2f"%(n,p)
     ax.clear()
     ax.set_ylabel("P")
-    ax.set_xlabel("x_i")
+    ax.set_xlabel("k")
+    ax.set_xticks(range(n+1))
     ax.bar(x=list(bars.keys()),height=bars.values(),width=1, align='center',edgecolor='blue',color='lightblue')
     ax.annotate(text, xy=(0.95,0.95), xycoords='axes fraction',va='top', ha='right', fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     plot_done()
