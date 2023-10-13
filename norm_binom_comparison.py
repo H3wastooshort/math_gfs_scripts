@@ -15,19 +15,28 @@ def plot_done():
     plt.gcf().canvas.draw_idle()
     plt.gcf().canvas.flush_events()
     print("plot completed")
+def normal_dist_area(a,b,mu,sigma):
+    B_a = scipy.stats.norm.cdf(a,loc=mu,scale=sigma)
+    B_b = scipy.stats.norm.cdf(b,loc=mu,scale=sigma)
+    return B_b - B_a
 def draw_bars(n,pp):
     ##calc
     p=pp/100
-    bars={}
+    bars_norm={}
+    bars_binom={}
+    mu=n*p
+    sigma=math.sqrt(n*p*(1-p))
     for k in range(n+1):
-        bars[k] = scipy.stats.binom.pmf(k,n,p)
+        bars_binom[k] = scipy.stats.binom.pmf(k,n,p)
+        bars_norm[k] = normal_dist_area(k-0.5,k+0.5,mu,sigma)
     ##draw (badly)
-    text="n=%d\np=%0.2f"%(n,p)
+    text="n=%d\np=%0.2f\nµ=%0.2f\nσ=%0.2f"%(n,p,mu,sigma)
     ax.clear()
     ax.set_ylabel("P")
     ax.set_xlabel("k")
-    ax.set_xticks(range(n+1))
-    ax.bar(x=list(bars.keys()),height=bars.values(),width=1, align='center',edgecolor='blue',color='lightblue')
+    #ax.set_xticks(range(n+1))
+    ax.bar(x=list(bars_binom.keys()),height=bars_binom.values(),width=1, align='center',edgecolor='red',color='mistyrose', alpha= 0.75)
+    ax.bar(x=list(bars_norm.keys()),height=bars_norm.values(),width=1, align='center',edgecolor='blue',color='lightblue', alpha= 0.75)
     ax.annotate(text, xy=(0.95,0.95), xycoords='axes fraction',va='top', ha='right', fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     plot_done()
 
