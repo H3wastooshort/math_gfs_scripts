@@ -74,8 +74,9 @@ for idx,this_oc in enumerate(outcomes):
     width = next_oc - this_oc
     bars_w.append(width)
     
-    area=this_oc*width
-    bars_y.append(nth_root(this_oc,width))
+    probability_density=1
+    
+    bars_y.append(probability_density)
 
 print(bars_x)
 print(bars_y)
@@ -87,7 +88,6 @@ print("plotting...")
 fig,ax = plt.subplots()
 #ax.set_ylabel("")
 #ax.set_xlabel("")
-plt.ylim(0,1000)
 ax.bar(bars_x, bars_y, bars_w, align='edge',edgecolor='blue',color='lightblue')
 ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
