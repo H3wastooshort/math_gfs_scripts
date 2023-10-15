@@ -34,22 +34,20 @@ def get_min(l):
             min_x = x
     return min_x
 
-def calc_mean_and_stddev(oc):
-    n_oc = 0
-    for v in oc.values():
-        n_oc += v
+def calc_mean_and_stddev(lst):
+    n_oc = len(lst)
     if n_oc < 1:
         return (0, 1)
     p_oc = {}
     mean = 0
-    for k in oc.keys():
-        p = (oc[k] / n_oc)
-        p_oc[k] = p
-        mean += p * k
+    for v in lst:
+        mean+=v
+    mean /= n_oc
+    
     variance = 0
-    for k in oc.keys():
-        variance += p_oc[k] * pow(k - mean, 2)
-    stddev = math.sqrt(variance)
+    for v in lst:
+        variance += pow(v - mean, 2)
+    stddev = math.sqrt(variance/n_oc)
     return (mean, stddev)
 
 def get_between(array,a,b):
@@ -114,6 +112,9 @@ print(bars_x)
 print(bars_y)
 print(bars_w)
 
+print("calulating stats...")
+mean, stddev = calc_mean_and_stddev(outcomes_raw)
+
 print("plotting...")
 
 #do plot
@@ -121,7 +122,7 @@ fig,ax = plt.subplots()
 #ax.set_ylabel("")
 #ax.set_xlabel("")
 ax.bar(bars_x, bars_y, bars_w, align='edge',edgecolor='blue',color='lightblue')
-ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
+ax.annotate("µ=%5f\nσ=%5f"%(mean,stddev),xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
 print("showing plot...")
 plt.show()
