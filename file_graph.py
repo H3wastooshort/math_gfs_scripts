@@ -2,7 +2,25 @@ import math, sys
 from matplotlib import pyplot as plt
 
 outcomes = []
+#read file
+filenames=sys.argv
+filenames.pop(0)
+print("reading %d files..." % (len(filenames)))
+for fn in filenames:
+    f = open(fn,'r')
+    for line in f:
+        line = line.replace(',','.') #some stuff uses , instead of . as decimal seperators
+        #print(line)
+        try:
+            outcomes.append(float(line))
+        except ValueError:
+            pass
+    f.close()
 
+print("sorting list...")
+outcomes.sort()
+oc_len = len(outcomes)
+#print(outcomes)
 
 def get_max(l):
     max_x = l[0]
@@ -35,11 +53,42 @@ def calc_mean_and_stddev(oc):
     stddev = math.sqrt(variance)
     return (mean, stddev)
 
+def nth_root(x,n):
+    try:
+        return x ** (1/n)
+    except OverflowError:
+        return 0
 
+#calc stuff
+print("calculating...")
+bars_x=[]
+bars_y=[]
+bars_w=[]
+for idx,this_oc in enumerate(outcomes):
+    if idx==oc_len-1:
+        break
+    
+    bars_x.append(this_oc)
+    
+    next_oc = outcomes[idx+1]
+    width = next_oc - this_oc
+    bars_w.append(width)
+    
+    area=this_oc*width
+    bars_y.append(nth_root(this_oc,width))
+
+print(bars_x)
+print(bars_y)
+print(bars_w)
+
+print("plotting...")
+
+#do plot
 fig,ax = plt.subplots()
 #ax.set_ylabel("")
 #ax.set_xlabel("")
-ax.step(even_summier_sum_outcomes.keys(), even_summier_sum_outcomes.values(), where='mid',color='blue')
+plt.ylim(0,1000)
+ax.bar(bars_x, bars_y, bars_w, align='edge',edgecolor='blue',color='lightblue')
 ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
 plt.show()
