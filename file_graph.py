@@ -2,6 +2,7 @@ import math, sys
 from matplotlib import pyplot as plt
 
 outcomes_raw = []
+min_width=float(input("enter min width: "))
 #read file
 filenames=sys.argv
 filenames.pop(0)
@@ -51,6 +52,13 @@ def calc_mean_and_stddev(oc):
     stddev = math.sqrt(variance)
     return (mean, stddev)
 
+def get_between(array,a,b):
+    res=[]
+    for x in array:
+        if a<=x<=b:
+            res.append(x)
+    return len(res)
+
 def nth_root(x,n):
     try:
         return x ** (1/n)
@@ -68,23 +76,39 @@ for idx in range(math.floor(len(outcomes_raw)/5)):
 
 oc_len = len(outcomes)
 
+def find_next_idx(lst,start_idx,target):
+    i = start_idx
+    lst_len = len(lst)
+    while i < lst_len:
+        if lst[i]>=target:
+            return i
+        i+=1
+    return -1
+
 print("calculating plot...")
 bars_x=[]
 bars_y=[]
 bars_w=[]
-for idx,this_oc in enumerate(outcomes):
-    if idx==oc_len-1:
-        break
+idx=0
+raw_oc_len=len(outcomes_raw)
+while True:
+    this_oc=outcomes_raw[idx]
     
     bars_x.append(this_oc)
     
-    next_oc = outcomes[idx+1]
-    width = next_oc - this_oc
+    next_oc = outcomes_raw[idx+1]
+    width = max(min_width, next_oc - this_oc)
     bars_w.append(width)
     
-    probability_density=1
+    n_hits = get_between(outcomes_raw, this_oc, this_oc+width)
     
-    bars_y.append(probability_density)
+    bars_y.append(n_hits/width)
+    
+    idx=find_next_idx(outcomes_raw,idx,this_oc+width)
+    if idx == -1:
+        break
+    if idx+1 >= raw_oc_len:
+        break
 
 print(bars_x)
 print(bars_y)
@@ -99,4 +123,5 @@ fig,ax = plt.subplots()
 ax.bar(bars_x, bars_y, bars_w, align='edge',edgecolor='blue',color='lightblue')
 ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
+print("showing plot...")
 plt.show()
