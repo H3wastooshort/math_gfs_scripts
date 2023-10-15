@@ -2,6 +2,9 @@ import asyncio, threading, math, scipy
 from time import sleep
 from matplotlib import pyplot as plt
 
+no_correct=False
+no_integral=False
+
 #set up plot
 plt.rc('axes', labelsize='x-large', titlesize='xx-large')
 plt.rc('xtick', labelsize='x-large')
@@ -16,9 +19,12 @@ def plot_done():
     plt.gcf().canvas.flush_events()
     print("plot completed")
 def normal_dist_area(a,b,mu,sigma):
-    B_a = scipy.stats.norm.cdf(a,loc=mu,scale=sigma)
-    B_b = scipy.stats.norm.cdf(b,loc=mu,scale=sigma)
-    return B_b - B_a
+    if no_integral:
+        return scipy.stats.norm.pdf((a+b)/2,loc=mu,scale=sigma) * (b-a)
+    else:
+        B_a = scipy.stats.norm.cdf(a,loc=mu,scale=sigma)
+        B_b = scipy.stats.norm.cdf(b,loc=mu,scale=sigma)
+        return B_b - B_a
 def draw_bars(n,pp):
     ##calc
     p=pp/100
@@ -28,7 +34,10 @@ def draw_bars(n,pp):
     sigma=math.sqrt(n*p*(1-p))
     for k in range(n+1):
         bars_binom[k] = scipy.stats.binom.pmf(k,n,p)
-        bars_norm[k] = normal_dist_area(k-0.5,k+0.5,mu,sigma)
+        if no_correct:
+            bars_norm[k] = normal_dist_area(k,k+1,mu,sigma)
+        else:
+            bars_norm[k] = normal_dist_area(k-0.5,k+0.5,mu,sigma)
     ##draw (badly)
     text="n=%d\np=%0.2f\nµ=%0.2f\nσ=%0.2f"%(n,p,mu,sigma)
     ax.clear()
