@@ -1,7 +1,7 @@
 import math, sys
 from matplotlib import pyplot as plt
 
-outcomes = []
+outcomes_raw = []
 #read file
 filenames=sys.argv
 filenames.pop(0)
@@ -12,15 +12,13 @@ for fn in filenames:
         line = line.replace(',','.') #some stuff uses , instead of . as decimal seperators
         #print(line)
         try:
-            outcomes.append(float(line))
+            outcomes_raw.append(float(line))
         except ValueError:
             pass
     f.close()
 
 print("sorting list...")
-outcomes.sort()
-oc_len = len(outcomes)
-#print(outcomes)
+outcomes_raw.sort()
 
 def get_max(l):
     max_x = l[0]
@@ -60,7 +58,17 @@ def nth_root(x,n):
         return 0
 
 #calc stuff
-print("calculating...")
+print("calculating avg...")
+outcomes=[]
+for idx in range(math.floor(len(outcomes_raw)/5)):
+    s=0
+    for i in range(idx,idx+5):
+        s+=outcomes_raw[i]
+    outcomes.append(s)
+
+oc_len = len(outcomes)
+
+print("calculating plot...")
 bars_x=[]
 bars_y=[]
 bars_w=[]
