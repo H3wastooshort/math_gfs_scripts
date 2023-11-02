@@ -1,12 +1,11 @@
 import math, sys
 from matplotlib import pyplot as plt
 
-sum_cnt = int(sys.argv[1])
 outcomes_raw = []
+sum_cnt = int(input("enter sumcount: "))
 min_width=float(input("enter min width: "))
 #read file
 filenames=sys.argv
-filenames.pop(0)
 filenames.pop(0)
 print("reading %d files..." % (len(filenames)))
 for fn in filenames:
