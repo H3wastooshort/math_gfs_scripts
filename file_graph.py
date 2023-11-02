@@ -1,10 +1,12 @@
 import math, sys
 from matplotlib import pyplot as plt
 
+sum_cnt = int(sys.argv[1])
 outcomes_raw = []
 min_width=float(input("enter min width: "))
 #read file
 filenames=sys.argv
+filenames.pop(0)
 filenames.pop(0)
 print("reading %d files..." % (len(filenames)))
 for fn in filenames:
@@ -18,8 +20,19 @@ for fn in filenames:
             pass
     f.close()
 
+outcomes_sum = []
+
+if (sum_cnt > 1):
+    for i in range(0,len(outcomes_raw)-sum_cnt,sum_cnt):
+        oc=0
+        for j in range(sum_cnt):
+            oc+=outcomes_raw[i+j]
+        outcomes_sum.append(oc)
+else:
+    outcomes_sum=outcomes_raw
+
 print("sorting list...")
-outcomes_raw.sort()
+outcomes_sum.sort()
 
 def get_max(l):
     max_x = l[0]
@@ -66,10 +79,10 @@ def nth_root(x,n):
 #calc stuff
 print("calculating avg...")
 outcomes=[]
-for idx in range(math.floor(len(outcomes_raw)/5)):
+for idx in range(math.floor(len(outcomes_sum)/5)):
     s=0
     for i in range(idx,idx+5):
-        s+=outcomes_raw[i]
+        s+=outcomes_sum[i]
     outcomes.append(s)
 
 oc_len = len(outcomes)
@@ -88,21 +101,21 @@ bars_x=[]
 bars_y=[]
 bars_w=[]
 idx=0
-raw_oc_len=len(outcomes_raw)
+raw_oc_len=len(outcomes_sum)
 while True:
-    this_oc=outcomes_raw[idx]
+    this_oc=outcomes_sum[idx]
     
     bars_x.append(this_oc)
     
-    next_oc = outcomes_raw[idx+1]
+    next_oc = outcomes_sum[idx+1]
     width = max(min_width, next_oc - this_oc)
     bars_w.append(width)
     
-    n_hits = get_between(outcomes_raw, this_oc, this_oc+width)
+    n_hits = get_between(outcomes_sum, this_oc, this_oc+width)
     
     bars_y.append(n_hits/width)
     
-    idx=find_next_idx(outcomes_raw,idx,this_oc+width)
+    idx=find_next_idx(outcomes_sum,idx,this_oc+width)
     if idx == -1:
         break
     if idx+1 >= raw_oc_len:
@@ -113,7 +126,7 @@ print(bars_y)
 print(bars_w)
 
 print("calulating stats...")
-mean, stddev = calc_mean_and_stddev(outcomes_raw)
+mean, stddev = calc_mean_and_stddev(outcomes_sum)
 
 print("plotting...")
 
