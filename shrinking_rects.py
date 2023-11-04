@@ -13,11 +13,6 @@ plt.ion()
 plt.show()
 fig,ax = plt.subplots()
 
-def normal_dist_area(a,b):
-    B_a = scipy.stats.norm.cdf(a,loc=0,scale=graph_sigma)
-    B_b = scipy.stats.norm.cdf(b,loc=0,scale=graph_sigma)
-    return B_b - B_a
-
 def plot_done():
     plt.gcf().canvas.draw_idle()
     plt.gcf().canvas.flush_events()
@@ -29,8 +24,8 @@ def draw_bars(n): #something causes errors here, idk what \(°-°)/
     bar_width = graph_width/n
     for i in range(-n,n):
         x = i * bar_width
-        bars[x] = normal_dist_area(x,x+bar_width)
-    text="P="+str(normal_dist_area(0,bar_width))
+        bars[x] = scipy.stats.norm.pdf(x+(bar_width/2),loc=0,scale=graph_sigma)
+    text="P="+str(scipy.stats.norm.pdf(0,loc=0,scale=graph_sigma) * bar_width)
     ##draw (badly)
     ax.clear()
     ax.bar(x=list(bars.keys()),height=bars.values(),width=bar_width, align='edge',edgecolor='blue',color='lightblue')
@@ -38,17 +33,24 @@ def draw_bars(n): #something causes errors here, idk what \(°-°)/
     ax.set_xlim(-graph_width,graph_width)
     plot_done()
 
+last_n=-1
 def input_loop():
+    global last_n
     while True:
         inp=input("Enter n/2 of bars: ")
         if inp == 'q':
             quit()
         if inp.isdigit():
-            draw_bars(int(inp))
+            last_n=int(inp)
         else:
             print("numbers only pls")
 
 input_thread = threading.Thread(target=input_loop)
 input_thread.start()
 
-plt.gcf().canvas.start_event_loop()
+while True:
+    if last_n > 0:
+        draw_bars(last_n)
+        last_n=-1
+    plt.gcf().canvas.draw_idle()
+    plt.gcf().canvas.start_event_loop(0.1)
