@@ -67,10 +67,11 @@ def calc_mean_and_stddev(oc):
     return (mean, stddev)
 
 sqrt_2pi = math.sqrt(2*math.pi)
-def normal_dist(x, mean,stddev):
+def normal_ish_dist(x, mean,stddev):
     if stddev == 0:
         return 0
-    return (1/(stddev*sqrt_2pi))  *  pow(math.e, -pow((x-mean)/stddev, 2) / 2)
+    #(1/(stddev*sqrt_2pi))  *
+    return pow(math.e, -pow((x-mean)/stddev, 2) / 2)
 def do_plot():
     global new_data
     new_data=False
@@ -100,7 +101,7 @@ def do_plot():
     
     bc_y = []
     for x in bellcurve_xvals:
-        bc_y.append(normal_dist(x, mean,stddev))
+        bc_y.append(normal_ish_dist(x, mean,stddev)*(max_y-1))
     bellcurve.set_ydata(bc_y)
     bellcurve.set_visible(True)
     
