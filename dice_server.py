@@ -66,6 +66,13 @@ def calc_mean_and_stddev(oc):
     stddev = math.sqrt(variance)
     return (mean, stddev)
 
+def get_n_oc(oc):
+    n=0
+    v=oc.values()
+    for x in v:
+        n+=x
+    return n
+
 sqrt_2pi = math.sqrt(2*math.pi)
 def normal_ish_dist(x, mean,stddev):
     if stddev == 0:
@@ -81,7 +88,8 @@ def do_plot():
     #update annotation
     mean_0 = mean/outcomes_per_sum
     stddev_0 = 0 #stddev*math.sqrt(outcomes_per_sum)
-    txt.set_text("µ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
+    sum_oc_l = get_n_oc(sum_outcomes)
+    txt.set_text("n=%d\n\nµ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (sum_oc_l,outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
     
     #update plot
     sum_ocv = list(sum_outcomes.values())
