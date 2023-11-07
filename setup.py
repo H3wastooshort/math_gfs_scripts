@@ -3,6 +3,7 @@
 
 from distutils.core import setup
 import py2exe
+import matplotlib
 
 # ``bundle_files`` option explained:
 # ===================================================
@@ -37,18 +38,15 @@ import py2exe
 #     some dlls, so use with caution.
 
 
-py2exe_options = dict(
-    packages = ['scipy','matplotlib','asyncio'],
+py2exe.freeze(
+    console=["binom_graph.py","shrinking_rects.py","dice_server.py"],
+    #data_files=matplotlib.get_py2exe_datafiles(),
+    zipfile='pkg.zip',
+    options={"py2exe": dict(
+    packages = ['matplotlib','six','scipy','asyncio'],
     optimize=0,
     compressed=True,
-    bundle_files=0,
+    bundle_files=3,
     dist_dir='dist'
+    )}
 )
-
-
-setup(
-    name="binom_graph",
-    console=["binom_graph.py"],
-    options={"py2exe": py2exe_options},
-)
-
