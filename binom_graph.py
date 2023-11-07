@@ -3,10 +3,11 @@ from time import sleep
 from matplotlib import pyplot as plt
 
 #set up plot
-plt.rc('axes', labelsize='x-large', titlesize='xx-large')
-plt.rc('xtick', labelsize='x-large')
-plt.rc('ytick', labelsize='x-large')
-plt.rc('legend', fontsize='xx-large')
+plt.rcParams.update({'font.size': 24})
+#plt.rc('axes', labelsize='xx-large', titlesize='xx-large')
+#plt.rc('xtick', labelsize='xx-large')
+#plt.rc('ytick', labelsize='xx-large')
+#plt.rc('legend', fontsize='xx-large')
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()
@@ -20,7 +21,7 @@ def draw_bars(n,pp):
     p=pp/100
     bars={}
     for k in range(n+1):
-        bars[k] = scipy.stats.binom.pmf(k,n,p)
+        bars[k] = scipy.stats.binom.cdf(k,n,p)
     ##draw (badly)
     text="n=%d\np=%0.2f"%(n,p)
     ax.clear()

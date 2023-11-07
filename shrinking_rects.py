@@ -5,10 +5,11 @@ from matplotlib import pyplot as plt
 graph_sigma=0.5
 
 #set up plot
-plt.rc('axes', labelsize='x-large', titlesize='xx-large')
-plt.rc('xtick', labelsize='x-large')
-plt.rc('ytick', labelsize='x-large')
-plt.rc('legend', fontsize='xx-large')
+plt.rcParams.update({'font.size': 24})
+#plt.rc('axes', labelsize='xx-large', titlesize='xx-large')
+#plt.rc('xtick', labelsize='xx-large')
+#plt.rc('ytick', labelsize='xx-large')
+#plt.rc('legend', fontsize='xx-large')
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()

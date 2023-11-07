@@ -29,6 +29,7 @@ sum_outcomes = {}
 reset_outcomes(sum_outcomes,possible_sum_outcomes)
 
 #set up plot
+plt.rcParams.update({'font.size': 16})
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()

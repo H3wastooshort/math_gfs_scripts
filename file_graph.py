@@ -130,6 +130,7 @@ mean, stddev = calc_mean_and_stddev(outcomes_sum)
 print("plotting...")
 
 #do plot
+plt.rcParams.update({'font.size': 24})
 fig,ax = plt.subplots()
 #ax.set_ylabel("")
 #ax.set_xlabel("")
