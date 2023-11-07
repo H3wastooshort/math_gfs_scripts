@@ -29,6 +29,8 @@ def draw_bars(n): #something causes errors here, idk what \(°-°)/
     text="P="+str(scipy.stats.norm.pdf(0,loc=0,scale=graph_sigma) * bar_width)
     ##draw (badly)
     ax.clear()
+    ax.set_ylabel("D")
+    ax.set_xlabel("x")
     ax.bar(x=list(bars.keys()),height=bars.values(),width=bar_width, align='edge',edgecolor='blue',color='lightblue')
     ax.annotate(text, xy=(bar_width,bars[0]),textcoords='axes fraction',va='top', ha='right',xytext=(0.95,0.95), fontsize='xx-large', arrowprops=dict(facecolor='black', shrink=0.05))
     ax.set_xlim(-graph_width,graph_width)

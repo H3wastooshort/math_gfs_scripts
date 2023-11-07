@@ -37,8 +37,8 @@ plt.xticks(fontsize='x-large')
 plt.yticks(fontsize='x-large')
 ax.set_xticks(possible_sum_outcomes)
 ax.set_ylim(get_min(possible_sum_outcomes)-1,get_max(possible_sum_outcomes)+1);
-#ax.set_ylabel("")
-#ax.set_xlabel("")
+ax.set_ylabel("y")
+ax.set_xlabel("x")
 bellcurve_xvals = possible_sum_outcomes
 bellcurve, = ax.plot(bellcurve_xvals,bellcurve_xvals,color='grey', visible=False)
 stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid',color='blue')
