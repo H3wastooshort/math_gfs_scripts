@@ -26,7 +26,7 @@ def draw_bars(n): #something causes errors here, idk what \(°-°)/
     for i in range(-n,n):
         x = i * bar_width
         bars[x] = scipy.stats.norm.pdf(x+(bar_width/2),loc=0,scale=graph_sigma)
-    text="P="+str(scipy.stats.norm.pdf(0,loc=0,scale=graph_sigma) * bar_width)
+    text="P=%.4f" % (scipy.stats.norm.pdf(0,loc=0,scale=graph_sigma) * bar_width)
     ##draw (badly)
     ax.clear()
     ax.set_ylabel("D")
