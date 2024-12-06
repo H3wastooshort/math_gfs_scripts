@@ -13,7 +13,6 @@ fetch("/cats").then(r=>{
     })
 })
 
-
 function send_outcome(evt) {
 	evt.srcElement.style.borderColor = "cyan";
 	fetch("/outcome", {
@@ -24,6 +23,7 @@ function send_outcome(evt) {
 	.then(r => {
 		evt.srcElement.style.borderColor = r.ok ? "white" : "red";
 		if (!r.ok) r.text().then(t=>{alert("SERVER ERROR:\n" + t)});
+        else document.body.innerText="Thank you.";
 	})
 	.catch(err => {
 		evt.srcElement.style.borderColor = "red";
