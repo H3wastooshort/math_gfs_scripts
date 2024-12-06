@@ -45,32 +45,9 @@ ax.set_xlim(get_min(possible_outcomes),get_max(possible_outcomes));
 ax.set_ylim(0,n_players);
 #ax.set_ylabel("")
 #ax.set_xlabel("")
-bellcurve_xvals = possible_outcomes
-bellcurve, = ax.plot(bellcurve_xvals,bellcurve_xvals,color='grey', visible=False)
 stepplot, = ax.step(outcomes.keys(), outcomes.values(), where='mid',color='blue')
-stddevline1, = ax.plot([0,0],[0,0],color='red', visible=False)
-stddevline2, = ax.plot([0,0],[0,0],color='red', visible=False)
-meanline, = ax.plot([0,0],[0,0],color='lime', visible=False)
 
 new_data = False
-
-def calc_mean_and_stddev(oc):
-    n_oc = 0
-    for v in oc.values():
-        n_oc += v
-    if n_oc < 1:
-        return (0, 1)
-    p_oc = {}
-    mean = 0
-    for k in oc.keys():
-        p = (oc[k] / n_oc)
-        p_oc[k] = p
-        mean += p * k
-    variance = 0
-    for k in oc.keys():
-        variance += p_oc[k] * pow(k - mean, 2)
-    stddev = math.sqrt(variance)
-    return (mean, stddev)
 
 def get_n_oc(oc):
     n=0
@@ -79,40 +56,17 @@ def get_n_oc(oc):
         n+=x
     return n
 
-sqrt_2pi = math.sqrt(2*math.pi)
-def normal_ish_dist(x, mean,stddev):
-    if stddev == 0:
-        return 0
-    #(1/(stddev*sqrt_2pi))  *
-    return pow(math.e, -pow((x-mean)/stddev, 2) / 2)
 def do_plot():
     global new_data
     new_data=False
     
-    global fig, ax, stepplot, mean, meanline, bellcurve
-    mean, stddev = calc_mean_and_stddev(outcomes)
+    global fig, ax, stepplot
 
     #update plot
     ocv = list(outcomes.values())
     max_y = get_max(ocv)+1
     ax.set_ylim(0,max_y);
     stepplot.set_ydata(ocv)
-    
-    meanline.set_xdata([mean,mean])
-    meanline.set_ydata([0,max_y])
-    meanline.set_visible(True)
-    stddevline1.set_xdata([mean+stddev,mean+stddev])
-    stddevline1.set_ydata([0,max_y])
-    stddevline1.set_visible(True)
-    stddevline2.set_xdata([mean-stddev,mean-stddev])
-    stddevline2.set_ydata([0,max_y])
-    stddevline2.set_visible(True)
-    
-    bc_y = []
-    for x in bellcurve_xvals:
-        bc_y.append(normal_ish_dist(x, mean,stddev)*(max_y-1))
-    bellcurve.set_ydata(bc_y)
-    bellcurve.set_visible(True)
     
     fig.canvas.draw()
     fig.canvas.flush_events()
@@ -140,6 +94,7 @@ async def add_outcome(req):
         return web.Response(status=400,text="unknown outcome")
     outcomes[n] += 1
     print(outcomes)
+    new_data=True
     return web.Response(text="ok")
 
 async def get_cats(req):
