@@ -142,11 +142,18 @@ async def add_outcome(req):
     print(outcomes)
     return web.Response(text="ok")
 
+async def get_cats(req):
+    j = json.dumps(possible_outcomes)
+    return web.Response(text=j,content_type="application/json")
+
 def web_runner():
     app = web.Application()
+    static_path=os.path.join(script_path,"student")
+    print(static_path)    
     app.add_routes([
-        web.static('/', script_path+"/student"),
-        web.post('/outcome', add_outcome)
+        web.static('/', static_path),
+        web.post('/outcome', add_outcome),
+        web.get('/cats', get_cats)
     ])
     runner = web.AppRunner(app)
     return runner
