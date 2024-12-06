@@ -4,8 +4,8 @@
   width: 100vw;
   max-width: 100%;
   display: grid;
-  grid-template-rows: 50% 50%;
-  grid-template-columns: 33% 33% 33%;
+  grid-template-rows: 33% 33% 33%;
+  grid-template-columns: 50% 50%;
 }
 
 body,button {
@@ -19,7 +19,7 @@ button {
   margin: 12px;
   border: 8px solid white;
   /*border-radius: 32px;*/
-  font-size: 15vh;
+  font-size: 10vw;
   text-align: center;
   box-shadow: 8px 8px 0px 0px purple;
   touch-action: manipulation;
