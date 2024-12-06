@@ -1,12 +1,18 @@
-possible_outcomes = [1,2,3,4,5,6]
-
 // generate buttons
-possible_outcomes.forEach(o => {
-	let btn = document.createElement('button');
-	btn.innerText = o;
-	btn.onclick=send_outcome;
-	btn_grid.appendChild(btn);
-});
+function make_buttons(oc) {
+    oc.forEach(o => {
+	    let btn = document.createElement('button');
+    	btn.innerText = o;
+	    btn.onclick=send_outcome;
+    	btn_grid.appendChild(btn);
+    });
+}
+fetch("/cats").then(r=>{
+    r.json().then(j=>{
+        make_buttons(j);
+    })
+})
+
 
 function send_outcome(evt) {
 	evt.srcElement.style.borderColor = "cyan";
