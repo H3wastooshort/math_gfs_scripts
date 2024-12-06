@@ -1,10 +1,20 @@
-import asyncio, threading, math
+import sys
+if len(sys.argv) != 3:
+    quit("server.py <number of players> <poll set file>")
+
+import asyncio, threading, math, json, os
 from aiohttp import web
 from matplotlib import pyplot as plt
 
-outcomes_per_sum = 5
+script_path = os.path.dirname(os.path.realpath(__file__))
+print(script_path)
 
-possible_outcomes = range(1,7,1)
+possible_outcomes = []
+with open(sys.argv[2],"r") as f:
+    possible_outcomes=json.loads(f.read())
+
+n_players = int(sys.argv[1])
+
 outcomes = {}
 def reset_outcomes(oc,po):
     for x in po:
@@ -24,27 +34,23 @@ def get_min(l):
             min_x = x
     return min_x
 
-possible_sum_outcomes = range(get_min(possible_outcomes)*outcomes_per_sum,(get_max(possible_outcomes)*outcomes_per_sum)+1,1)
-sum_outcomes = {}
-reset_outcomes(sum_outcomes,possible_sum_outcomes)
-
 #set up plot
 plt.ion()
 plt.show()
 fig,ax = plt.subplots()
 plt.xticks(fontsize='x-large')
 plt.yticks(fontsize='x-large')
-ax.set_xticks(possible_sum_outcomes)
-ax.set_ylim(get_min(possible_sum_outcomes)-1,get_max(possible_sum_outcomes)+1);
+ax.set_xticks(possible_outcomes)
+ax.set_xlim(get_min(possible_outcomes),get_max(possible_outcomes));
+ax.set_ylim(0,n_players);
 #ax.set_ylabel("")
 #ax.set_xlabel("")
-bellcurve_xvals = possible_sum_outcomes
+bellcurve_xvals = possible_outcomes
 bellcurve, = ax.plot(bellcurve_xvals,bellcurve_xvals,color='grey', visible=False)
-stepplot, = ax.step(sum_outcomes.keys(), sum_outcomes.values(), where='mid',color='blue')
+stepplot, = ax.step(outcomes.keys(), outcomes.values(), where='mid',color='blue')
 stddevline1, = ax.plot([0,0],[0,0],color='red', visible=False)
 stddevline2, = ax.plot([0,0],[0,0],color='red', visible=False)
 meanline, = ax.plot([0,0],[0,0],color='lime', visible=False)
-txt = ax.annotate("",xycoords='axes fraction', xy=(0.05,0.95), va='top', ha='left', fontsize='xx-large')
 
 new_data = False
 
@@ -83,19 +89,14 @@ def do_plot():
     global new_data
     new_data=False
     
-    global fig, ax, stepplot, txt, mean, meanline, bellcurve
-    mean, stddev = calc_mean_and_stddev(sum_outcomes)
-    #update annotation
-    mean_0 = mean/outcomes_per_sum
-    stddev_0 = 0 #stddev*math.sqrt(outcomes_per_sum)
-    sum_oc_l = get_n_oc(sum_outcomes)
-    txt.set_text("n=%d\n\nµ_%d=%.2f\nσ_%d=%.2f\nµ_1=%.2f\nσ_1=%.2f" % (sum_oc_l,outcomes_per_sum, mean, outcomes_per_sum, stddev, mean_0, stddev_0))
-    
+    global fig, ax, stepplot, mean, meanline, bellcurve
+    mean, stddev = calc_mean_and_stddev(outcomes)
+
     #update plot
-    sum_ocv = list(sum_outcomes.values())
-    max_y = get_max(sum_ocv)+1
+    ocv = list(outcomes.values())
+    max_y = get_max(ocv)+1
     ax.set_ylim(0,max_y);
-    stepplot.set_ydata(sum_ocv)
+    stepplot.set_ydata(ocv)
     
     meanline.set_xdata([mean,mean])
     meanline.set_ydata([0,max_y])
@@ -127,22 +128,6 @@ def plot_loop():
     except KeyboardInterrupt:
         quit()
 
-def do_outcome_sum():
-    global new_data
-    n=0
-    for v in outcomes.values():
-        n+=v
-    if n >= outcomes_per_sum:
-        #calc new sum and add to dist
-        o_sum = 0
-        for k in outcomes.keys():
-            o_sum += k*outcomes[k]
-            outcomes[k]=0
-        print(o_sum)
-        sum_outcomes[o_sum] += 1
-        new_data=True
-        
-
 async def add_outcome(req):
     global new_data
     dat = await req.text()
@@ -155,18 +140,26 @@ async def add_outcome(req):
         return web.Response(status=400,text="unknown outcome")
     outcomes[n] += 1
     print(outcomes)
-    do_outcome_sum()
     return web.Response(text="ok")
 
-def web_loop():
+def web_runner():
     app = web.Application()
     app.add_routes([
-        web.static('/', "student"),
+        web.static('/', script_path+"/student"),
         web.post('/outcome', add_outcome)
     ])
-    web.run_app(app)
+    runner = web.AppRunner(app)
+    return runner
 
-web_thread = threading.Thread(target=web_loop)
-web_thread.start()
+def run_server(runner):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(runner.setup())
+    site = web.TCPSite(runner, 'localhost', 8001)
+    loop.run_until_complete(site.start())
+    loop.run_forever()
+
+t = threading.Thread(target=run_server, args=(web_runner(),))
+t.start()
 
 plot_loop()
